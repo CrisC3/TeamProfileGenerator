@@ -108,7 +108,7 @@ function init(prompts) {
 
             const newEngineer = new Engineer(engId, engName, engEmail, engGithub);
 
-            teamMembers.engineers.push(JSON.stringify(newEngineer));
+            teamMembers.engineers.push(newEngineer);
         }
         else if (response.hasOwnProperty("intSchool")) {
             const intId = response.employeeId;
@@ -120,7 +120,7 @@ function init(prompts) {
 
             const newIntern = new Intern(intId, intName, intEmail, intSchool);
 
-            teamMembers.interns.push(JSON.stringify(newIntern));
+            teamMembers.interns.push(newIntern);
         }
 
         switch (response.addMore) {
@@ -141,7 +141,7 @@ function init(prompts) {
 
 function generateHtml() {
     const newTemplate = new Template(teamMembers);
-    newTemplate.generateIndex();
+    newTemplate.generateWeb();
 }
 
 // Call to initialize app when starting the
