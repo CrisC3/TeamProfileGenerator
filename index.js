@@ -1,10 +1,16 @@
 const inquirer = require("inquirer");
-const Employee = require("./lib/Employee");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
+const Template = require("./src/template");
 
-const empPrompts = [
+let teamMembers = {
+    manager: "",
+    engineers: [],
+    interns: []
+};
+
+let empPrompts = [
     {
         type: 'input',
         name: 'employeeId',
@@ -19,8 +25,8 @@ const empPrompts = [
 
 const newEmpPrompt = {
     type: 'list',
-    name: 'roleAction',
-    message: 'Please choose to add an engineer, intern, or choose finish to be done building your team',
+    name: 'addMore',
+    message: 'Please choose to add an engineer, intern, or finish to be done building your team',
     choices: ['Engineer', 'Intern', '..Finish'],
     default: '..Finish'
 }
@@ -38,10 +44,7 @@ const mgrPrompts = [
         type: 'input',
         name: 'mrgOffice',
         message: 'Please enter employee\'s office number ='
-    },
-        // Copies the new employee prompts [newEmpPrompt] and
-        // adds the questions as if they were declare locally
-        newEmpPrompt    
+    }
 ];
 
 const engPrompts = [
@@ -57,10 +60,7 @@ const engPrompts = [
         type: 'input',
         name: 'engGithub',
         message: 'Please enter the engineer\'s Github username ='
-    },
-        // Copies the new employee prompts [newEmpPrompt] and
-        // adds the questions as if they were declare locally
-        newEmpPrompt
+    }
 ];
 
 const intPrompts = [
@@ -69,18 +69,14 @@ const intPrompts = [
         name: 'intName',
         message: 'Please enter the intern\'s name ='
     },
-    
-    // Copies the employee prompts [empPrompts] and adds
-    // the questions as if they were declare locally
-    ...empPrompts,
+        // Copies the employee prompts [empPrompts] and adds
+        // the questions as if they were declare locally
+        ...empPrompts,
     {
         type: 'input',
         name: 'intSchool',
-        message: 'Please enter the engineer\'s school ='
-    },
-        // Copies the new employee prompts [newEmpPrompt] and
-        // adds the questions as if they were declare locally
-        newEmpPrompt
+        message: 'Please enter the intern\'s school ='
+    }
 ];
 
 function init(prompts) {
@@ -89,32 +85,63 @@ function init(prompts) {
     .prompt(prompts)
     .then((response) => {
         
-        if (response.hasOwnProperty("mrgOffice") && (response.roleAction == "..Finish")) {
-            response.roleAction = "Manager";
+        if (response.hasOwnProperty("mrgOffice")) {
+            
+            const mgrId = response.employeeId;
+            const mgrName = response.mgrName;
+            const mgrEmail = response.employeeEmail;
+            const mgrOffice = response.mrgOffice
+            
+            response.role = "Manager";
+
+            const newManager = new Manager(mgrId, mgrName, mgrEmail, mgrOffice);
+
+            teamMembers.manager = JSON.stringify(newManager);
         }
-        else if (response.hasOwnProperty("engGithub") && (response.roleAction == "..Finish")) {
-            response.roleAction = "Engineer";
+        else if (response.hasOwnProperty("engGithub")) {
+            const engId = response.employeeId;
+            const engName = response.engName;
+            const engEmail = response.employeeEmail;
+            const engGithub = response.engGithub;
+            
+            response.role = "Engineer";
+
+            const newEngineer = new Engineer(engId, engName, engEmail, engGithub);
+
+            teamMembers.engineers.push(JSON.stringify(newEngineer));
         }
-        else if (response.hasOwnProperty("intSchool") ) {
-            response.roleAction = "Intern";
-        }
-        else {
-            response.roleAction = "N/A";
+        else if (response.hasOwnProperty("intSchool")) {
+            const intId = response.employeeId;
+            const intName = response.intName;
+            const intEmail = response.employeeEmail;
+            const intSchool = response.intSchool;
+
+            response.role = "Intern";
+
+            const newIntern = new Intern(intId, intName, intEmail, intSchool);
+
+            teamMembers.interns.push(JSON.stringify(newIntern));
         }
 
-        console.log(response.roleAction);
-        switch (response.roleAction) {
+        switch (response.addMore) {
             case "Engineer":
-                call(init(engPrompts));
+                init(engPrompts);
+                break;
             case "Intern":
-                call(init(intPrompts));
+                init(intPrompts);
+                break;
+            case "..Finish":
+                generateHtml();
+                break;
+            default:
+                init(newEmpPrompt);
         }
-        console.log(response);
     });
 }
 
 function generateHtml() {
-    return 0;
+    const newTemplate = new Template(teamMembers);
+    newTemplate.generateIndex();
 }
 
 // Call to initialize app when starting the
