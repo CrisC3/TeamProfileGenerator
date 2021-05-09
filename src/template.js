@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { resolve } = require('path');
 
 class Template {
     
@@ -29,6 +30,7 @@ class Template {
             <div class="container">
                 <main class="d-flex justify-content-center flex-wrap">`;
 
+        
         let htmlData = () => {
             
             let membersHtmlCards = "";
@@ -47,12 +49,13 @@ class Template {
 
             function htmlLoop(cardData) {
 
-                const icon = (cardData.role == "Manager") ? "fas fa-briefcase" : (cardData.role == "Engineer") ? "fas fa-glasses" : "fas fa-graduation-cap";
+                const iconSize = "fa-2x";
+                const icon = (cardData.role == "Manager") ? `fas fa-briefcase ${iconSize}` : (cardData.role == "Engineer") ? `fas fa-glasses ${iconSize}` : `fas fa-graduation-cap ${iconSize}`;
                 const lastItemText = (cardData.role == "Manager") ? "Office Number" : (cardData.role == "Engineer") ? "Github" : "School";
 
-                let lastItemVal = (cardData.role == "Manager") ? cardData.officeNumber : (cardData.role == "Engineer") ? cardData.github : cardData.school;
+                let lastItemVal = (cardData.role == "Manager") ? cardData.officeNumber : (cardData.role == "Engineer") ? `<a href="https://github.com/${cardData.github}">${cardData.github}</a>` : cardData.school;
 
-                    membersHtmlCards += `<div class="card m-3">
+                membersHtmlCards += `<div class="card m-3">
                     <div class="card-header bg-primary">
                         <h2 class="text-white">${cardData.name}</h2>
                         <div class="d-flex align-center">
@@ -70,6 +73,7 @@ class Template {
                         </ul>
                     </div>
                 </div>`;
+
             }
 
             htmlCards(mgrData);
@@ -78,7 +82,7 @@ class Template {
 
             return membersHtmlCards;
         };
-
+        
         const htmlFooter =
         `
                 </main>
