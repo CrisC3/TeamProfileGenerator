@@ -4,6 +4,7 @@ class Template {
     
     constructor(data) {
         this.employees = data;
+        this.webLocalPath = "./dist/index.html"
     }
 
     generateWeb() {
@@ -13,7 +14,7 @@ class Template {
         const engData = empData.engineers;
         const intData = empData.interns;
 
-        const htmlTop = 
+        const htmlHeader = 
         `<!DOCTYPE html>
         <html>
         <head>
@@ -78,16 +79,16 @@ class Template {
             return membersHtmlCards;
         };
 
-        const htmlBottom =
+        const htmlFooter =
         `
                 </main>
             </div>
         </body>
         </html>`;
 
-        let fullHtml = htmlTop + htmlData() + htmlBottom;
+        let fullHtml = htmlHeader + htmlData() + htmlFooter;
 
-        fs.writeFile('./dist/index.html', fullHtml, (err) => {
+        fs.writeFile(this.webLocalPath, fullHtml, (err) => {
             if (err) {
                 throw err;
             };
